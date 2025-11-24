@@ -32,7 +32,7 @@ def get_gspread_client():
         creds_json = st.secrets["gcp_service_account"]
         creds = Credentials.from_service_account_info(
             creds_json,
-            # Scope pour l'accès aux feuilles de calcul
+            # Scope CORRECT pour l'accès aux feuilles de calcul
             scopes=['https://www.googleapis.com/auth/spreadsheets'] 
         )
         client = gspread.authorize(creds)
@@ -62,6 +62,7 @@ def load_data(workbook_name):
             # Erreur 403 : Problème de permissions
             if "403" in str(e):
                 st.error(f"Erreur lors du chargement des données de {workbook_name}: {e}")
+                # Affichage du message d'instruction crucial
                 st.error("🛑 Erreur 403 : Problème d'autorisation. Partagez le CLASSEUR (document) avec l'adresse : streamlit-lacroix-reader@lacroixglorieuse.iam.gserviceaccount.com (permissions ÉDITEUR)")
             else:
                 st.error(f"Erreur API inconnue lors du chargement des données de {workbook_name}: {e}")
@@ -91,14 +92,15 @@ def check_password(password, hashed_password):
 
 def register_user(email, password, sheet):
     """Ajoute un nouvel utilisateur à la feuille Google Sheets."""
-    global df_users # Permettre la modification du DataFrame en mémoire pour la vérification
+    # Déclaration explicite de global si df_users doit être modifié en place (ce qui n'est pas nécessaire pour concat mais plus sûr)
+    global df_users 
     
     if sheet is None:
         st.error("Impossible de se connecter à la base d'utilisateurs pour l'inscription. (Vérifiez le partage du document)")
         return False
         
-    # Le code vérifie si les colonnes existent (si le df n'est pas vide)
-    if 'Email' in df_users.columns.tolist() and email in df_users['Email'].tolist():
+    # Vérifie si l'email existe DANS le DataFrame si les colonnes sont présentes
+    if not df_users.empty and 'Email' in df_users.columns.tolist() and email in df_users['Email'].tolist():
         st.warning("Cet e-mail est déjà utilisé. Veuillez vous connecter.")
         return False
 
