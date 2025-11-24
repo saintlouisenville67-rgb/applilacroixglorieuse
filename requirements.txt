@@ -1,4 +1,4 @@
 streamlit
 pandas
 gspread
-streamlit-authenticator
+bcrypt
