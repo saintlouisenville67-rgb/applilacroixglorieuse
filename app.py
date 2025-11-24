@@ -36,6 +36,12 @@ def get_gspread_client():
             scopes=['https://www.googleapis.com/auth/spreadsheets'] 
         )
         client = gspread.authorize(creds)
+        
+        # AJOUT DÉBOGAGE : Afficher l'e-mail utilisé par l'application
+        service_account_email = creds.service_account_email
+        if service_account_email:
+             st.info(f"Client Google Sheets authentifié avec succès pour le compte : **{service_account_email}**")
+        
         return client
     except Exception as e:
         # Cette erreur est résolue en ajoutant le bloc [gcp_service_account] aux secrets
