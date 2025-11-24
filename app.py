@@ -30,10 +30,14 @@ def get_gspread_client():
         # Tente de charger les secrets
         # Assurez-vous d'avoir configuré le fichier .streamlit/secrets.toml
         creds_json = st.secrets["gcp_service_account"]
+        
+        # --- CORRECTION CRUCIALE DU SCOPE ICI ---
+        # Le scope doit être l'URL de l'API Sheets, rien d'autre.
+        sheets_scope = 'https://www.googleapis.com/auth/spreadsheets'
+        
         creds = Credentials.from_service_account_info(
             creds_json,
-            # Scope CORRECT pour l'accès aux feuilles de calcul
-            scopes=['https://www.googleapis.com/auth/spreadsheets'] 
+            scopes=[sheets_scope] 
         )
         client = gspread.authorize(creds)
         
